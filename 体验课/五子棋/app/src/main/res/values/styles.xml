@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="titleBarStyle" parent="android:Theme">
+        <!-- 原始标题栏的高度 -->
+        <item name="android:windowTitleSize">50dp</item>
+        <!-- 使新的标题栏完全延伸到对齐到原始标题栏的两边 -->
+        <item name="android:padding">0dp</item>
+    </style>
+
+</resources>

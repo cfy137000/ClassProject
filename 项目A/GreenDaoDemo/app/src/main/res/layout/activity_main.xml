@@ -1,0 +1,14 @@
+<!-- 直接将DrawerLayout作为根布局,其内部第一个View为内容区域,第二个View为左划的菜单,第三个为右侧的侧滑菜单,并且第三个菜单是可选的
+     第一个宽高应该match_parent,不懂得话你可以退学了
+     第二个  第三个View需要设置在左面android:layout_gravity="left"和在右面android:layout_gravity="right",一般高度是match的,宽度根据自己的需求设置固定值,这个固定值就是你侧滑菜单的宽度-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/ic_launcher">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Hello World"/>
+</LinearLayout>

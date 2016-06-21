@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.chenfengyao.recycleviewdemo.SlidingButtonView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginBottom="1dp"
+    android:background="@android:color/white">
+    <!--滚动条只能包含一个组件-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/btn_click_black_havebackground"
+            android:textColor="#DD000000"
+            android:textSize="50dp" />
+        <!--删除按钮在主体的右面-->
+        <TextView
+            android:id="@+id/tv_delete"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/text"
+            android:background="@drawable/btn_click_red_havebackground"
+            android:gravity="center"
+            android:text="删 除"
+            android:textColor="#DDFFFFFF" />
+    </RelativeLayout>
+</com.example.chenfengyao.recycleviewdemo.SlidingButtonView>
