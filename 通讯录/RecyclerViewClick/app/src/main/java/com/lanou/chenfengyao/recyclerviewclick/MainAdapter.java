@@ -17,12 +17,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
     private List<String> datas;
     private Context context;
 
-    public MainAdapter(Context context) {
+    public MainAdapter(Context context,List<String> datas) {
         this.context = context;
-        datas = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            datas.add("This is " + i);
-        }
+        this.datas = datas;
     }
 
     @Override
