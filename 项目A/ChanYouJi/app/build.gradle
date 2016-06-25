@@ -26,4 +26,5 @@ dependencies {
     compile 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.android.support:design:23.4.0'
+    compile 'com.timehop.stickyheadersrecyclerview:library:0.4.3'
 }
