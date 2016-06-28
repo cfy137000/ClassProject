@@ -42,7 +42,7 @@ public class TestBeanDao extends AbstractDao<TestBean, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"TEST_BEAN\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NAME\" TEXT NOT NULL ," + // 1: name
                 "\"SCORE\" INTEGER," + // 2: score
                 "\"DATE\" INTEGER);"); // 3: date

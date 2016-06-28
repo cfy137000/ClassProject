@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args){
         Schema schema = new Schema(1, "com.lanou.chenfengyao.databasedemo.database");
         Entity note= schema.addEntity("TestBean");
-        note.addIdProperty();
+        note.addIdProperty().autoincrement();
         note.addStringProperty("name").notNull();
         note.addIntProperty("score");
         note.addDateProperty("date");
