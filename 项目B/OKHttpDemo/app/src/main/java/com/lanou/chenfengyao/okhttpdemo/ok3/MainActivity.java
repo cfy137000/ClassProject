@@ -1,5 +1,7 @@
 package com.lanou.chenfengyao.okhttpdemo.ok3;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -7,13 +9,23 @@ import android.util.Log;
 
 import com.lanou.chenfengyao.okhttpdemo.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Dispatcher;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.Util;
 
 /**
  * Created by ChenFengYao on 16/7/14.
@@ -46,21 +58,31 @@ public class MainActivity extends AppCompatActivity {
             "  \"method\": \"Verify\",\n" +
             "  \"id\":12\n" +
             "}";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        client = new OkHttpClient();
+//        client = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        int core = 5;
+
+        ExecutorService executorService = new ThreadPoolExecutor(core, core, 60, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false));
+        builder.dispatcher(new Dispatcher(executorService));
+        client = builder.build();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-//                    String s = httpRun(getUrl);
-                    String s = post(postUrl,jsonBody);
+////                    String s = httpRun("http://192.168.31.228:8080/servlet/HelloServlet");
+                    String s = post("http://chenfy.xyz/servlet/HelloServlet",
+                            jsonBody);
                     Log.d("MainActivity", s);
-
-                } catch (IOException e) {
+//                    Log.d("MainActivity", s);
+//                    post();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -69,12 +91,49 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void post() {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources()
+                , R.mipmap.ic_launcher);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] bytes = null;
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        bytes = outputStream.toByteArray();
+        RequestBody body = RequestBody.create(JSON, bytes);
+        final Request request = new Request.Builder()
+                .url("http://lizhongren.com.cn/uploadtest/uploadTest.php")
+                .post(body)
+                .addHeader("Content-Type", "image/png")
+                .addHeader("Content-Length", bytes.length + "")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("MainActivity", response.body().string());
+            }
+        });
+    }
+
     String post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body;
+//                = RequestBody.create(JSON, json);
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("body", "body");
+//        byte[] bytes = null;
+//        String s = new String(bytes);
+//        builder.add()
+        body = builder.build();
+
         Request request = new Request.Builder()
                 .url(url)
+                //.method("post")
                 .post(body)
-                .addHeader("apikey",apiKey)
+
+                .addHeader("head", "aaaa")
 
                 .build();
         Response response = client.newCall(request).execute();
