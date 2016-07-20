@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)http://192.168.0.100:8080/md/demo.md -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>深入解析Handler原理以及Handler的使用姿势 - By wswenyue</title>
+    <link rel="stylesheet" media="all" href="./handler_files/nodeppt.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./handler_files/phone.css">
+    
+    <link rel="stylesheet" href="./handler_files/monokai_sublime.css">
+    <link rel="stylesheet" href="./handler_files/font-awesome.css">
+    
+<link rel="stylesheet" href="./handler_files/theme.moon.css">
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body style="opacity: 1; transition: -webkit-transform 0.8s ease;"><div id="MathJax_Message" style="display: none;"></div>
+<div class="slides">
+    <slides id="container">
+        <slide class="slide current pagedown" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>MShare（二）</h1>
+<h2>深入解析Handler原理以及Handler的使用姿势</h2>
+<p><small>演讲者：张万新</small></p>
+
+</article><iframe id="tmp_downloadhelper_iframe" style="display: none;" src="./handler_files/saved_resource.html"></iframe></section></slide>
+<slide class="slide next pagedown" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Handler的一般用法</h2>
+<pre><code class="java hljs"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HandlerActivity</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Activity</span> </span>{
+    <span class="hljs-keyword">private</span> Handler mHandler = <span class="hljs-keyword">new</span> Handler() {
+        <span class="hljs-annotation">@Override</span>
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">handleMessage</span><span class="hljs-params">(Message msg)</span> </span>{
+            <span class="hljs-keyword">if</span> (msg.what == <span class="hljs-number">0x123</span>) {
+                <span class="hljs-comment">//....</span>
+                mTv.setText(msg.obj.toString());
+            }
+        }
+    };
+    <span class="hljs-keyword">private</span> TextView mTv;
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span><span class="hljs-params">(Bundle savedInstanceState)</span> </span>{
+        <span class="hljs-keyword">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_handler);
+        mTv = (TextView) findViewById(R.id.mTv);
+        <span class="hljs-keyword">new</span> Thread(<span class="hljs-keyword">new</span> Runnable() {
+            <span class="hljs-annotation">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+                <span class="hljs-keyword">try</span> {
+                    Thread.sleep(<span class="hljs-number">1000</span> * <span class="hljs-number">60</span>);
+                    Message msg = mHandler.obtainMessage();
+                    msg.what = <span class="hljs-number">0x123</span>;
+                    msg.obj = <span class="hljs-string">"hello text"</span>;
+                    mHandler.sendMessage(msg);
+                } <span class="hljs-keyword">catch</span> (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide far-next pagedown" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Handler 是什么？</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">Android中更新UI的一套机制？</li>
+<li class="tobuild" data-index="1">Android的一套消息机制？</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><hgroup>
+<h2>为什么要使用Handler来更新UI？</h2>
+
+</hgroup><article>
+
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">Android规定访问UI只能在主线程中进行，如果子线程访问UI，程序会抛出错误。</li>
+<li class="tobuild" data-index="1">Android又建议不要在主线程中进行耗时操作，否则会导致程序无法响应即ANR。</li>
+<li class="tobuild" data-index="2">经常被开发者用来更新UI</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>子线程为什么不能访问UI？</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">多线程并发访问UI可能会导致UI控件处于不可预期的状态。如果加锁，虽然能解决，但是缺点也很明显：</li>
+<li class="tobuild" data-index="1">锁机制让UI访问逻辑变得复杂</li>
+<li class="tobuild" data-index="2">加锁导致效率低下</li>
+<li class="tobuild" data-index="3">所以简单高效的方式就是采用单线程模型来处理UI问题。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Handler运行机制==Android消息机制</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">通过它可以轻松地将一个任务切换到Handler所在的线程中去执行</li>
+<li class="tobuild" data-index="1">Android的消息机制即Handler的运行机制，它所涉及到的类如下：</li>
+<li class="tobuild" data-index="2">Message 消息的封装，消息体；</li>
+<li class="tobuild" data-index="3">MessageQueue 消息队列；</li>
+<li class="tobuild" data-index="4">Handler 消息机制的上层接口。封装了消息的发送（主要包括消息发送给谁）</li>
+<li class="tobuild" data-index="5">Looper 消息机制的发动机。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Android系统中用到Handler的例子</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">Activity的生命周期的回调方法都是通过Handler机制发送相应消息，根据不同的Message做出不同的分支处理。AMS（ActivityManageService）发送消息给ActivityThread，然后由ActivityThread对相应消息做出相应方法的回调。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Android消息机制源码解读</h2>
+<ul>
+<li>ThreadLocal</li>
+<li>代码角度走一遍</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>ThreadLocal</h2>
+<p>不是线程，是一个线程内部的数据存储类，通过它可以在指定的线程中存储数据，数据存储以后，只有在指定线程中可以获取到存储的数据，对于其他线程来说则无法获取到数据。
+Android源码中使用到地方有：Looper、ActivityThread、AMS</p>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>由两个线程间通信的例子，来看一遍源码。</h2>
+<pre><code class="java hljs">Looper.prepare()---&gt;<span class="hljs-keyword">new</span> <span class="hljs-function">Looper 
+
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">prepare</span><span class="hljs-params">(<span class="hljs-keyword">boolean</span> quitAllowed)</span> </span>{
+    <span class="hljs-comment">//...</span>
+    sThreadLocal.set(<span class="hljs-keyword">new</span> Looper(quitAllowed));
+}
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Looper</span><span class="hljs-params">(<span class="hljs-keyword">boolean</span> quitAllowed)</span> </span>{
+    mQueue = <span class="hljs-keyword">new</span> MessageQueue(quitAllowed);
+    mThread = Thread.currentThread();
+}
+
+<span class="hljs-keyword">new</span> <span class="hljs-function">Hanlder 
+
+<span class="hljs-keyword">public</span> <span class="hljs-title">Handler</span><span class="hljs-params">(Callback callback, <span class="hljs-keyword">boolean</span> async)</span> </span>{
+       <span class="hljs-comment">//...</span>
+        mLooper = Looper.myLooper();<span class="hljs-comment">//sThreadLocal.get();</span>
+        <span class="hljs-comment">//...</span>
+        mQueue = mLooper.mQueue;
+        mCallback = callback;
+        mAsynchronous = async;
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<pre><code class="java hljs">Looper.loop()
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">final</span> MessageQueue queue = me.mQueue;
+    <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">for</span> (;;) {
+        Message msg = queue.next(); <span class="hljs-comment">// might block</span>
+        <span class="hljs-keyword">if</span> (msg == <span class="hljs-keyword">null</span>) {
+            <span class="hljs-comment">// No message indicates that the message queue is quitting.</span>
+            <span class="hljs-keyword">return</span>;
+        }        
+        <span class="hljs-comment">//...</span>
+        msg.target.dispatchMessage(msg);
+        <span class="hljs-comment">//...</span>
+    }
+}
+Handler.dispatchMessage()
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">dispatchMessage</span><span class="hljs-params">(Message msg)</span> </span>{
+    <span class="hljs-keyword">if</span> (msg.callback != <span class="hljs-keyword">null</span>) {
+        handleCallback(msg); <span class="hljs-comment">//message.callback.run();</span>
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">if</span> (mCallback != <span class="hljs-keyword">null</span>) {<span class="hljs-comment">//可以new Handler 传入Callback</span>
+            <span class="hljs-keyword">if</span> (mCallback.handleMessage(msg)) {<span class="hljs-comment">// Handler(Callback callback, boolean async)</span>
+                <span class="hljs-keyword">return</span>;
+            }
+        }
+        handleMessage(msg);<span class="hljs-comment">//子类复写该方法</span>
+    }
+}  
+<span class="hljs-comment">//Subclasses must implement this to receive messages.    </span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">handleMessage</span><span class="hljs-params">(Message msg)</span> </span>{ }
+</code></pre>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<pre><code class="java hljs">MessageQueue.next()
+<span class="hljs-function">Message <span class="hljs-title">next</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">int</span> pendingIdleHandlerCount = -<span class="hljs-number">1</span>; <span class="hljs-comment">// -1 only during first iteration</span>
+    <span class="hljs-keyword">int</span> nextPollTimeoutMillis = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (;;) {
+        <span class="hljs-comment">//...</span>
+        <span class="hljs-keyword">synchronized</span> (<span class="hljs-keyword">this</span>) {
+            <span class="hljs-comment">//...</span>
+            <span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> now = SystemClock.uptimeMillis();
+            Message prevMsg = <span class="hljs-keyword">null</span>;
+            Message msg = mMessages;
+           <span class="hljs-comment">//...</span>
+            <span class="hljs-keyword">if</span> (msg != <span class="hljs-keyword">null</span>) {
+                <span class="hljs-keyword">if</span> (now &lt; msg.when) {
+                    <span class="hljs-comment">// Next message is not ready.  Set a timeout to wake up when it is ready.</span>
+                    nextPollTimeoutMillis = (<span class="hljs-keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);
+                } <span class="hljs-keyword">else</span> {
+                    <span class="hljs-comment">// Got a message.</span>
+                    mBlocked = <span class="hljs-keyword">false</span>;
+                    <span class="hljs-keyword">if</span> (prevMsg != <span class="hljs-keyword">null</span>) {
+                        prevMsg.next = msg.next;
+                    } <span class="hljs-keyword">else</span> {
+                        mMessages = msg.next;
+                    }
+                    msg.next = <span class="hljs-keyword">null</span>;
+                    <span class="hljs-keyword">if</span> (DEBUG) Log.v(TAG, <span class="hljs-string">"Returning message: "</span> + msg);
+                    msg.markInUse();
+                    <span class="hljs-keyword">return</span> msg;<span class="hljs-comment">//返回符合当前时间的消息</span>
+                }
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-comment">// No more messages.</span>
+                nextPollTimeoutMillis = -<span class="hljs-number">1</span>;
+            }
+</code></pre>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<pre><code class="java hljs"><span class="hljs-comment">// Process the quit message now that all pending messages have been handled.</span>
+            <span class="hljs-keyword">if</span> (mQuitting) {
+                dispose();
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+            }
+            <span class="hljs-comment">//...</span>
+        }
+    }
+
+# <span class="hljs-function">Handler send message
+<span class="hljs-title">post</span><span class="hljs-params">(Runnable)</span>
+<span class="hljs-title">postAtTime</span><span class="hljs-params">(Runnable,<span class="hljs-keyword">long</span>)</span>
+<span class="hljs-title">postDelayed</span><span class="hljs-params">(Runnable,<span class="hljs-keyword">long</span>)</span>
+
+<span class="hljs-title">sendMessage</span><span class="hljs-params">(Message)</span>
+<span class="hljs-title">sendMessageDelayed</span><span class="hljs-params">(Message,<span class="hljs-keyword">long</span>)</span>
+<span class="hljs-title">sendMessageAtTime</span><span class="hljs-params">(Message,<span class="hljs-keyword">long</span>)</span>
+<span class="hljs-title">sendEmptyMessage</span><span class="hljs-params">(<span class="hljs-keyword">int</span>)</span>
+sendEmpty...
+
+上面所有的方法都会调用到<span class="hljs-title">sendMessageAtTime</span><span class="hljs-params">(Message msg, <span class="hljs-keyword">long</span> uptimeMillis)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">sendMessageAtTime</span><span class="hljs-params">(Message msg, <span class="hljs-keyword">long</span> uptimeMillis)</span> </span>{
+    MessageQueue queue = mQueue; <span class="hljs-comment">// mQueue = mLooper.mQueue;</span>
+    <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">enqueueMessage</span><span class="hljs-params">(MessageQueue queue, Message msg, <span class="hljs-keyword">long</span> uptimeMillis)</span> </span>{
+    msg.target = <span class="hljs-keyword">this</span>;<span class="hljs-comment">//this 就是当前Handler自己</span>
+   <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<pre><code class="java hljs">MessageQueue.enqueueMessage()
+<span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">enqueueMessage</span><span class="hljs-params">(Message msg, <span class="hljs-keyword">long</span> when)</span> </span>{
+   <span class="hljs-comment">//...</span>
+    <span class="hljs-keyword">synchronized</span> (<span class="hljs-keyword">this</span>) {
+        <span class="hljs-keyword">if</span> (mQuitting) {
+            <span class="hljs-comment">//...</span>
+            msg.recycle();
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+        }
+        msg.markInUse();
+        msg.when = when;
+        Message p = mMessages;
+        <span class="hljs-keyword">boolean</span> needWake;
+        <span class="hljs-keyword">if</span> (p == <span class="hljs-keyword">null</span> || when == <span class="hljs-number">0</span> || when &lt; p.when) {
+            <span class="hljs-comment">// New head, wake up the event queue if blocked.</span>
+            msg.next = p;
+            mMessages = msg;
+            needWake = mBlocked;
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-comment">// ...</span>
+            Message prev;
+            <span class="hljs-keyword">for</span> (;;) {
+                prev = p;
+                p = p.next;
+                <span class="hljs-keyword">if</span> (p == <span class="hljs-keyword">null</span> || when &lt; p.when) {
+                    <span class="hljs-keyword">break</span>;
+                }
+                <span class="hljs-comment">//...</span>
+            }
+            msg.next = p; <span class="hljs-comment">// invariant: p == prev.next</span>
+            prev.next = msg;
+        }
+        <span class="hljs-comment">//...</span>
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+}
+</code></pre>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>类结构图</h1>
+<img src="./handler_files/class_msg.jpg" alt="">
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Handler和native的关系</h1>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">MessageQueue.next()--&gt;nativePollOnce(mPtr,nextPollTimeoutMillis)</li>
+<li class="tobuild" data-index="1">mPtr:存储了Native层的消息队列对象</li>
+<li class="tobuild" data-index="2"><img src="./handler_files/looper_cpp.png" alt=""></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>Android为什么要有两套消息机制？</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">Android支持纯Native开发，所以需要Native实现一套消息机制；</li>
+<li class="tobuild" data-index="1">Android核心组件运行在Native层，它们之间的通信需要消息机制</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Android消息机制源码的设计艺术</h1>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>命令模式</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">定义：命令模式是对命令的封装。 命令模式把发出命令的责任和执行命令的责任分割开，委派给不同的对象。 每一个命令都是一个操作：请求的一方发出请求要求执行一个操作；接收的一方收到请求，并执行操作 </li>
+<li class="tobuild" data-index="1">从源码可以看出Handler的target是Handler类型，实际就是转了一圈，通过Handler将消息传递给消息队列，消息队列又将消息分发给Handler来处理。</li>
+<li class="tobuild" data-index="2">Message就是一条命令，Handler就是处理人，通过命令模式将操作与执行者解耦。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<h2>享元模式</h2>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">定义：是对象池的一种实现。享元模式用来尽可能减少内存的使用量，它适用于可能存在大量重复对象的场景，来缓解可共享的对象，达到对象共享、避免创建过多对象的效果，作用是提示性能。避免内存溢出。</li>
+<li class="tobuild" data-index="1">Message对象池</li>
+<li class="tobuild" data-index="2"><div class="columns3"><img src="./handler_files/m_1.jpg" height="260" width="400"><img src="./handler_files/m_2.jpg" height="260" width="400"></div></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Handler使用中遇到的问题</h1>
+<ul class="fadeIn">
+<li class="tobuild" data-index="0">CalledFromWrongThreadException：这种异常是因为尝试在子线程中去更新UI，进而产生异常</li>
+<li class="tobuild" data-index="1">Can't create handle inside thread that ha not called Looper.prepared：是因为我们在子线程中去创建Handler，而产生的异常</li>
+<li class="tobuild" data-index="2">Handler当做内部类，使用不当导致内存泄露的问题</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>如何优雅的使用Handler</h1>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>交流时刻</h1>
+
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>谢谢大家！！！</h1>
+
+</article></section></slide>
+        
+
+        <!-- <slide class="slide logoslide dark nobackground">
+            <article class="flexbox vcenter">
+                <h2 style="color: white;">Powered By nodePPT v1.4.2</h2>
+            </article>
+        </slide> -->
+        <div class="slideTip" id="tip"></div>
+    </slides>
+</div>
+<canvas id="drawBoard" class="draw-board" width="900" height="700" style="display: none;"></canvas>
+<div class="progress"><span id="progress" style="width: 4.16667%;"></span></div>
+<div id="_buttons">
+    <div class="_btn-box" id="_btn-box" style="display:none;">
+        <button class="fa fa-arrow-circle-left" id="_btn-prev"></button>
+        <button class="fa fa-arrow-circle-right" id="_btn-next"></button>
+        <button class="fa fa-paint-brush" id="_btn-brush"></button>
+        <button class="fa fa-compress" id="_btn-overview" data-toggle="fa fa-expand"></button>
+    </div>
+    <button class="fa fa-bars" id="_btn-bar" data-toggle="fa fa-close"></button>
+</div>
+<script src="./handler_files/mix.0.3.0.min.js"></script>
+<script>
+var base = location.protocol + '//' + location.host;
+
+MixJS.config({
+    baseURL: [ base, 'js'].join('/')+'/'
+});
+
+</script>
+<script src="./handler_files/broadcast.js"></script>
+<script src="./handler_files/nodeppt.js"></script>
+<script>
+Slide.init({
+    containerID: 'container',
+    drawBoardID: 'drawBoard',
+    slideClass: '.slide',
+    buildClass: '.build',
+    progressID: 'progress',
+    transition: 'slide3',
+    width: 1100,
+    dir: './',
+    
+    //打开下面的注释就开启postMessage方式
+    //访问网址127.0.0.1:8080/ppt/demo#client
+    control:{
+        type: 'postMessage',
+        args:{
+            isControl:  false
+        }
+    },
+    
+    tipID: 'tip'
+});
+MixJS.loadJS('highlight/highlight.pack.js',function(){
+    hljs.tabReplace = '  ';
+    hljs.initHighlightingOnLoad();
+});
+</script>
+<script src="./handler_files/demo.js"></script>
+<link rel="stylesheet" href="./handler_files/demo.css">
+<script src="./handler_files/zoom.js"></script>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config;executed=true">
+  MathJax.Hub.Config({
+  config: ["TeX-AMS-MML_HTMLorMML.js"],
+  tex2jax: {inlineMath: [['\\(','\\)']]}});
+  //['$','$'], 避免货币价格冲突
+</script>
+<script type="text/javascript" src="./handler_files/MathJax.js"></script>
+
+<!--placeholder-->
+
+
+<audio controls="controls" style="display: none;"></audio><div class="img-full transparent"></div><canvas height="778" width="1003" style="position: absolute; top: 0px; display: none;"></canvas></body><style type="text/css">#yddContainer{display:block;font-family:Microsoft YaHei;position:relative;width:100%;height:100%;top:-4px;left:-4px;font-size:12px;border:1px solid}#yddTop{display:block;height:22px}#yddTopBorderlr{display:block;position:static;height:17px;padding:2px 28px;line-height:17px;font-size:12px;color:#5079bb;font-weight:bold;border-style:none solid;border-width:1px}#yddTopBorderlr .ydd-sp{position:absolute;top:2px;height:0;overflow:hidden}.ydd-icon{left:5px;width:17px;padding:0px 0px 0px 0px;padding-top:17px;background-position:-16px -44px}.ydd-close{right:5px;width:16px;padding-top:16px;background-position:left -44px}#yddKeyTitle{float:left;text-decoration:none}#yddMiddle{display:block;margin-bottom:10px}.ydd-tabs{display:block;margin:5px 0;padding:0 5px;height:18px;border-bottom:1px solid}.ydd-tab{display:block;float:left;height:18px;margin:0 5px -1px 0;padding:0 4px;line-height:18px;border:1px solid;border-bottom:none}.ydd-trans-container{display:block;line-height:160%}.ydd-trans-container a{text-decoration:none;}#yddBottom{position:absolute;bottom:0;left:0;width:100%;height:22px;line-height:22px;overflow:hidden;background-position:left -22px}.ydd-padding010{padding:0 10px}#yddWrapper{color:#252525;z-index:10001;background:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ab20.png);}#yddContainer{background:#fff;border-color:#4b7598}#yddTopBorderlr{border-color:#f0f8fc}#yddWrapper .ydd-sp{background-image:url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ydd-sprite.png)}#yddWrapper a,#yddWrapper a:hover,#yddWrapper a:visited{color:#50799b}#yddWrapper .ydd-tabs{color:#959595}.ydd-tabs,.ydd-tab{background:#fff;border-color:#d5e7f3}#yddBottom{color:#363636}#yddWrapper{min-width:250px;max-width:400px;}</style></html>
