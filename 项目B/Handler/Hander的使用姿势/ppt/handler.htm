@@ -2,7 +2,7 @@
 <!-- saved from url=(0036)http://192.168.0.100:8080/md/demo.md -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
-    <title>深入解析Handler原理以及Handler的使用姿势 - By wswenyue</title>
+    <title>深入解析Handler原理以及Handler的使用姿势</title>
     <link rel="stylesheet" media="all" href="./handler_files/nodeppt.css">
     <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./handler_files/phone.css">
     
@@ -110,9 +110,9 @@
 <div class="slides">
     <slides id="container">
         <slide class="slide current pagedown" data-transition="slide3"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>MShare（二）</h1>
-<h2>深入解析Handler原理以及Handler的使用姿势</h2>
-<p><small>演讲者：张万新</small></p>
+
+<h1>深入解析Handler原理以及Handler的使用姿势</h1>
+
 
 </article><iframe id="tmp_downloadhelper_iframe" style="display: none;" src="./handler_files/saved_resource.html"></iframe></section></slide>
 <slide class="slide next pagedown" data-transition="slide3"><section class="slide-wrapper"><article>
@@ -221,6 +221,9 @@ Android源码中使用到地方有：Looper、ActivityThread、AMS</p>
 
 <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">prepare</span><span class="hljs-params">(<span class="hljs-keyword">boolean</span> quitAllowed)</span> </span>{
     <span class="hljs-comment">//...</span>
+    if(sThreadLocal.get() != null){
+        throw new RuntimeException("Only one Looper may be created per thread");
+    }
     sThreadLocal.set(<span class="hljs-keyword">new</span> Looper(quitAllowed));
 }
 <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Looper</span><span class="hljs-params">(<span class="hljs-keyword">boolean</span> quitAllowed)</span> </span>{
@@ -245,6 +248,10 @@ Android源码中使用到地方有：Looper、ActivityThread、AMS</p>
 <pre><code class="java hljs">Looper.loop()
 <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-comment">//...</span>
+     <span class="hljs-keyword">final</span> Looper me = myLooper();  
+        if (me == null) {  
+            throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");  
+        }
     <span class="hljs-keyword">final</span> MessageQueue queue = me.mQueue;
     <span class="hljs-comment">//...</span>
     <span class="hljs-keyword">for</span> (;;) {
@@ -275,6 +282,13 @@ Handler.dispatchMessage()
 <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">handleMessage</span><span class="hljs-params">(Message msg)</span> </span>{ }
 </code></pre>
 
+</article></section></slide>
+<slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
+<pre><code class="java hljs">Looper.myloop()
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">Looper</span> <span class="hljs-title">myLooper</span><span class="hljs-params">()</span> </span>{
+    <span class = "hljs-keyword">return</span> sThreadLocal.get();
+}
+</code></pre>
 </article></section></slide>
 <slide class="slide" data-transition="slide3"><section class="slide-wrapper"><article>
 <pre><code class="java hljs">MessageQueue.next()
