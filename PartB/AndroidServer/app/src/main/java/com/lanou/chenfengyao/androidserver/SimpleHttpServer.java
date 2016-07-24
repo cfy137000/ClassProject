@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,10 +25,12 @@ public class SimpleHttpServer {
     private boolean isEnable;
     private ServerSocket socket;
     private final ExecutorService threadPool;
+    private Set<IResourceUriHandler> resourceHandlers;
 
     public SimpleHttpServer(WebConfiguration webConfiguration) {
         this.webConfiguration = webConfiguration;
         threadPool = Executors.newCachedThreadPool();
+        resourceHandlers = new HashSet<>();
     }
 
     /**
@@ -82,6 +86,10 @@ public class SimpleHttpServer {
 
     private final String TAG = "SimpleHttpServer";
 
+    public void registerResourceHandler(IResourceUriHandler handler){
+        resourceHandlers.add(handler);
+    }
+
     private void onAcceptRemotePeer(Socket remotePeer) {
         try {
 //            remotePeer.getOutputStream()
@@ -93,17 +101,29 @@ public class SimpleHttpServer {
             Log.d("SimpleHttpServer", "准备开始打印头");
             InputStreamReader inputStreamReader = new InputStreamReader(nis);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String resourceUri = headLine = bufferedReader.readLine().split(" ")[1];
+            Log.d(TAG, "onAcceptRemotePeer: resourceUri:"+resourceUri);
             while ((headLine = bufferedReader.readLine().trim()) != null) {
                 if (headLine.equals("")) {
-                    continue;
+                    break;
                 }
                 Log.d(TAG, "onAcceptRemotePeer: " + headLine);
                 String[] headers = headLine.split(": ");
-                httpContext.addRequestHeader(headers[0],headers[1]);
+                if (headers.length > 1) {
+                    httpContext.addRequestHeader(headers[0], headers[1]);
+                }
             }
 
-
             Log.d("SimpleHttpServer", "打印结束");
+
+            for (IResourceUriHandler handler : resourceHandlers) {
+                if(!handler.accept(resourceUri)){
+
+                    continue;
+                }
+                handler.handler(resourceUri,httpContext);
+            }
+
         } catch (IOException e) {
             Log.d("SimpleHttpServer", e.toString());
         }
