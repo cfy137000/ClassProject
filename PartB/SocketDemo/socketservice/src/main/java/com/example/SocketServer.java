@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import static java.lang.System.out;
 
 /**
@@ -21,12 +24,12 @@ public class SocketServer {
     private WebConfig mWebConfig;
     private boolean isEnable;
     private ServerSocket mServerSocket;
-    private Set<IResourceUriHandler> resourceHandlers;
+
 
     public SocketServer(WebConfig webConfig) {
         mWebConfig = webConfig;
         mThreadPool = Executors.newCachedThreadPool();
-        resourceHandlers = new HashSet<>();
+
     }
 
     /**
@@ -66,10 +69,16 @@ public class SocketServer {
                 mThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        out.println("一个远程连接已连接:"
+                        String s = null;
+                        try {
+                            s = new String("一个远程连接已连接:".getBytes(), "utf-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        out.println(s
                                 + remotePeer.getRemoteSocketAddress().toString());
 
-                        //onAcceptRemotePeer(remotePeer);
+                        onAcceptRemotePeer(remotePeer);
                     }
                 });
             }
@@ -79,45 +88,35 @@ public class SocketServer {
 
     }
 
-    public void registerResourceHandler(IResourceUriHandler handler){
-        resourceHandlers.add(handler);
-    }
 
-    private void onAcceptRemotePeer(Socket remotePeer) {
-        try {
-//            remotePeer.getOutputStream()
-//                    .write("congratulations,connected successful".getBytes());
-            HttpContext httpContext = new HttpContext();
-            httpContext.setUnderlySocket(remotePeer);
-            InputStream nis = remotePeer.getInputStream();
-            String headLine = null;
-            out.println("开始获取请求头");
-            InputStreamReader inputStreamReader = new InputStreamReader(nis);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String resourceUri = headLine = bufferedReader.readLine().split(" ")[1];
-            while ((headLine = bufferedReader.readLine().trim()) != null) {
-                if (headLine.equals("")) {
-                    break;
-                }
-                out.println("请求头-"+headLine);
-                String[] headers = headLine.split(": ");
-                if (headers.length > 1) {
-                    httpContext.addRequestHeader(headers[0], headers[1]);
+    private void onAcceptRemotePeer(Socket client) {
+        try{
+            //获取Socket的输出流，用来向客户端发送数据
+            PrintStream out = new PrintStream(client.getOutputStream());
+            //获取Socket的输入流，用来接收从客户端发送过来的数据
+            BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            boolean flag =true;
+            while(flag){
+                //接收从客户端发送过来的数据
+                String str =  buf.readLine();
+
+                if(str == null || "".equals(str)){
+                    System.out.println("没有消息退出");
+                    flag = false;
+                }else{
+                    if("bye".equals(str)){
+                        flag = false;
+                    }else{
+                        System.out.println("收到消息" + str);
+                        //将接收到的字符串前面加上echo，发送到对应的客户端
+                        out.println("echo:" + str);
+                    }
                 }
             }
-
-            out.println("请求头获取完成");
-
-            for (IResourceUriHandler handler : resourceHandlers) {
-                if(!handler.accept(resourceUri)){
-
-                    continue;
-                }
-                handler.handler(resourceUri,httpContext);
-            }
-
-        } catch (IOException e) {
-          e.printStackTrace();
+            out.close();
+            client.close();
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 

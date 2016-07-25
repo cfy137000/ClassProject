@@ -9,10 +9,6 @@ public class Main {
         SocketServer simpleHttpServer;
         simpleHttpServer = new SocketServer(webConfig);
 
-        simpleHttpServer.registerResourceHandler(new ResourceInAssetsHanler());
-        simpleHttpServer.registerResourceHandler(new UploadImageHandler() {
-        });
-
         simpleHttpServer.startAsync();
 
     }
