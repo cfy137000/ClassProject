@@ -2,9 +2,13 @@ package com.lanou.chenfengyao.socketdemo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+
+import org.json.JSONArray;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,8 +17,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private Button sendBtn;
@@ -29,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         sendBtn = (Button) findViewById(R.id.send_btn);
         mainEt = (EditText) findViewById(R.id.main_et);
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     client = new Socket(host, port);
+
                     client.setKeepAlive(true);
                    // client.setSoTimeout(30000);
 
