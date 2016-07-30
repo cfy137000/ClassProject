@@ -50,9 +50,8 @@ public class UDPAty extends AppCompatActivity {
                         String recData = mainEt.getText().toString();
                         //发送数据到
                         try {
-
-
-                            DatagramPacket dpSend = new DatagramPacket(recData.getBytes(), recData.getBytes().length
+                            DatagramPacket dpSend = new DatagramPacket(recData.getBytes()
+                                    , recData.getBytes().length
                                     , mSocketAddress);
                             mDatagramSocket.send(dpSend);
 
