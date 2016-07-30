@@ -25,11 +25,13 @@ public class UDPCinentA {
             while (true){
                 //一直等待接收数据
                 datagramSocket.receive(receiver);
-                String data = new String(receiver.getData(),receiver.getOffset(),receiver.getLength());
+                String data = new String(receiver.getData()
+                        ,receiver.getOffset(),receiver.getLength());
                 System.out.println("客户端A接收到了数据"+data);
                 //模拟回复数据
                 String recData = "你说的:"+data+" 我知道了";
-                DatagramPacket dpSend = new DatagramPacket(recData.getBytes(), recData.getBytes().length
+                DatagramPacket dpSend = new DatagramPacket(recData.getBytes()
+                        , recData.getBytes().length
                         , receiver.getAddress(), receiver.getPort());
                 datagramSocket.send(dpSend);
             }
