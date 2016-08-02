@@ -22,6 +22,11 @@ public class TestService extends Service {
         public void changeData(TestBean testBean) throws RemoteException {
             Log.i("TestService","testBean:"+testBean.testString);
         }
+
+        @Override
+        public void changeAnother(AnotherBean anotherbean) throws RemoteException {
+
+        }
     };
 
     @Nullable
