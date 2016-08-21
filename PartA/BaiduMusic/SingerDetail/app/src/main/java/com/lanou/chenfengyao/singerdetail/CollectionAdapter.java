@@ -11,29 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ChenFengYao on 16/8/20.
+ * Created by ChenFengYao on 16/8/21.
  */
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyVH> {
+public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.MyVH> {
     private Context mContext;
     private List<String> mStringList;
 
-    public MainAdapter(Context context) {
+    public CollectionAdapter(Context context) {
         mContext = context;
         mStringList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            mStringList.add("这是歌曲" + i);
+            mStringList.add("这是专辑" + i);
         }
     }
 
     @Override
-    public MyVH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CollectionAdapter.MyVH onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.main_item,parent,false);
         MyVH myVH = new MyVH(view);
         return myVH;
     }
 
     @Override
-    public void onBindViewHolder(MyVH holder, int position) {
+    public void onBindViewHolder(CollectionAdapter.MyVH holder, int position) {
         holder.textView.setText(mStringList.get(position));
     }
 
@@ -41,7 +41,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyVH> {
     public int getItemCount() {
         return mStringList.size();
     }
-
     class MyVH extends RecyclerView.ViewHolder{
         TextView textView;
         public MyVH(View itemView) {
@@ -49,4 +48,5 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyVH> {
             textView = (TextView) itemView.findViewById(R.id.item_tv);
         }
     }
+
 }
