@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private String url = "http://www.liwushuo.com/posts/1043516";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +27,14 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);//要想和js交互 必须开启Js
-        webView.loadUrl("file:///android_asset/test.html");//加载本地页面
+//        webView.loadUrl("file:///android_asset/test.html");//加载本地页面
+        webView.loadUrl(url);
         webView.addJavascriptInterface(this, "demo");//demo是别名,和Js带代码里的是对应关系
     }
 
     //被js代码调用的方法,方法名需要和js代码一一对应
     @JavascriptInterface
-    void clickOnAndroid(){
+    void clickOnAndroid() {
         Toast.makeText(MainActivity.this, "被点击了", Toast.LENGTH_SHORT).show();
         webView.post(new Runnable() {
             @Override
@@ -41,6 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-       
+
     }
 }
