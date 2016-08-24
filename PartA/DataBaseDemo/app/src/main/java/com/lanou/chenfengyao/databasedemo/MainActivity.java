@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         liteDB.queryGoodStudent(new LiteDB.OnQueryListener<List<Student>>() {
             @Override
             public void onQuery(List<Student> students) {
+                Log.d("MainActivity", Thread.currentThread().getName());
                 for (Student student : students) {
                     Log.d("MainActivity", "student:" + student);
                 }

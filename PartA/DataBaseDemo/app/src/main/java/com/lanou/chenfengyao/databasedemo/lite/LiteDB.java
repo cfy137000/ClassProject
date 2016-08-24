@@ -53,27 +53,41 @@ public class LiteDB {
         mLiteOrm.insert(students);
     }
 
-    public void queryGoodStudent(final OnQueryListener<List<Student>> onQueryListener) {
-
-        AsyncTask<Void, Void, List<Student>> asyncTask
-                = new AsyncTask<Void, Void, List<Student>>() {
+    public void queryGoodStudent(OnQueryListener<List<Student>> onQueryListener) {
+        MyAsync<List<Student>> myAsync = new MyAsync<List<Student>>(onQueryListener) {
             @Override
             protected List<Student> doInBackground(Void... params) {
-                QueryBuilder<Student> studentQueryBuilder = new QueryBuilder<>(Student.class);
-                studentQueryBuilder.where("score > 60", null);
-                ArrayList<Student> query = mLiteOrm.query(studentQueryBuilder);
-
-                return query;
-            }
-
-            @Override
-            protected void onPostExecute(List<Student> students) {
-                super.onPostExecute(students);
-                onQueryListener.onQuery(students);
+                return queryGoodStudentSync();
             }
         };
-        asyncTask.execute();
+        myAsync.execute();
+
+
     }
+
+    abstract class MyAsync<T> extends AsyncTask<Void,Void,T>{
+        OnQueryListener<T> mTOnQueryListener;
+
+        public MyAsync(OnQueryListener<T> TOnQueryListener) {
+            mTOnQueryListener = TOnQueryListener;
+        }
+
+        @Override
+        protected void onPostExecute(T t) {
+            super.onPostExecute(t);
+            mTOnQueryListener.onQuery(t);
+        }
+    }
+
+    private List<Student> queryGoodStudentSync(){
+        Log.d("LiteDB", Thread.currentThread().getName());
+        QueryBuilder<Student> studentQueryBuilder = new QueryBuilder<>(Student.class);
+        studentQueryBuilder.where("score > 60", null);
+        ArrayList<Student> query = mLiteOrm.query(studentQueryBuilder);
+
+        return query;
+    }
+
 
     public interface OnQueryListener<T> {
         void onQuery(T t);
