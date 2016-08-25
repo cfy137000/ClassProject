@@ -1,9 +1,11 @@
-package com.lanou.chenfengyao.volleydemo;
+package com.lanou3g.lesson.volley;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.lanou3g.lesson.tools.CloseHelper;
+import com.lanou3g.lesson.utils.MD5Util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,13 +16,13 @@ import java.io.IOException;
  */
 public class DiskCache implements ImageLoader.ImageCache {
 
-   // static String cacheDir = "/sdcard/Download/";
+    static String cacheDir = "/sdcard/Download/";
 //    static String cacheDir = SDCardHelper.getSdCardPath();
-      static String cacheDir = MyApp.context.getCacheDir().toString();
+
     @Override
     public Bitmap getBitmap(String url) {
-        url = MD5Util.getMD5String(url);
-        return BitmapFactory.decodeFile(cacheDir + url+".png");
+        url = MD5Util.getMD5Str(url);
+        return BitmapFactory.decodeFile(cacheDir + url+".jpg");
     }
 
     @Override
@@ -29,8 +31,8 @@ public class DiskCache implements ImageLoader.ImageCache {
         if (!file.exists()) {
             file.mkdir();
         }
-        url = MD5Util.getMD5String(url);
-        File imageFile = new File(cacheDir, url+".png");
+        url = MD5Util.getMD5Str(url);
+        File imageFile = new File(cacheDir, url+".jpg");
         if (!imageFile.exists()) {
             FileOutputStream fileOutputStream = null;
             try {
@@ -40,10 +42,8 @@ public class DiskCache implements ImageLoader.ImageCache {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                try {
-                    fileOutputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (fileOutputStream != null) {
+                    CloseHelper.close(fileOutputStream);
                 }
             }
         }
