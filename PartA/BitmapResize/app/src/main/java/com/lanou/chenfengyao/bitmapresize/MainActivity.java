@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,6 +14,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
+        Log.d("MainActivity", "bitmap.getRowBytes():" + bitmap.getHeight());
+        bitmap = resizeBitmap2(bitmap,10,10);
+        Log.d("MainActivity", "bitmap.getHeight():" + bitmap.getHeight());
+    }
+
+    public Bitmap resizeBitmap2(Bitmap bitmap, int reqW, int reqH){
+        Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap,reqW,reqH,false);
+        return newBitmap;
     }
 
     //当bitmap已经进入内存时的压缩方法
