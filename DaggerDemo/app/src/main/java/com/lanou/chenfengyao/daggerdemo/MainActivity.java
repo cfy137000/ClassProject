@@ -2,26 +2,36 @@ package com.lanou.chenfengyao.daggerdemo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextView;
+
+    @Inject //被注入的属性是不能写成私有的
+    public A a;
+
     @Inject
-    UserModel mUserModel;//使用@Inject标识被注入的对象 不能为private
-    private ActivityComponent mActivityComponent;
+    public Gson mGson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mTextView = (TextView) findViewById(R.id.user_desc_line);
 
-        mActivityComponent = DaggerActivityComponent.builder().activityModule(new ActivityModule()).build();
-        mActivityComponent.inject(this);
+        //注入
+       // DaggerAComponent.builder().build().inject(this);
+        DaggerAllComponet.builder().build().inject(this);
+        String s = mGson.toJson(a);
+        Log.d("MainActivity", s);
 
-        mTextView.setText(mUserModel.name);
+        a.doSomething(mTextView);
+
     }
 }
