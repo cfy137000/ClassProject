@@ -102,7 +102,7 @@ public class PostAty extends AppCompatActivity implements View.OnClickListener {
                 .setType(MultipartBody.FORM)
                 .build();
 
-
+//cankui
         final Request request = new Request.Builder()
                 .url(imgUrl)
                 .post(requestBody)
