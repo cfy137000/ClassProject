@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.lanou.chenfengyao.okhttpdemo.R;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -98,11 +100,11 @@ public class PostAty extends AppCompatActivity implements View.OnClickListener {
 
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), bytes);
 
+
         RequestBody requestBody = new MultipartBody.Builder().addFormDataPart("file", "file.png", fileBody)
                 .setType(MultipartBody.FORM)
                 .build();
 
-//cankui
         final Request request = new Request.Builder()
                 .url(imgUrl)
                 .post(requestBody)
