@@ -2,9 +2,14 @@ package com.lanou.chenfengyao.greendaodemo;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
+import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -39,7 +44,7 @@ public class DBManager {
         return mInstance;
     }
 
-    public void upData(Person person){
+    public void upData(Person person) {
         DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
         DaoSession daoSession = daoMaster.newSession();
         PersonDao personDao = daoSession.getPersonDao();
@@ -67,7 +72,31 @@ public class DBManager {
         DaoSession daoSession = daoMaster.newSession();
         PersonDao userDao = daoSession.getPersonDao();
         userDao.insert(user);
+
+        daoSession.getDao(Person.class);
     }
+
+    public <T> void insert(T t) {
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        Class<T> aClass = (Class<T>) t.getClass();
+        AbstractDao<T, Long> dao = (AbstractDao<T, Long>) daoSession.getDao(aClass);
+        dao.insert(t);
+    }
+
+    public <T> void insert(List<T> tList) {
+        if (tList.size() == 0) {
+            return;
+        }
+        T t = tList.get(0);
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        Class<T> aClass = (Class<T>) t.getClass();
+        AbstractDao<T, Long> dao = (AbstractDao<T, Long>) daoSession.getDao(aClass);
+        dao.insertInTx(tList);
+
+    }
+
 
     /**
      * 插入用户集合
@@ -85,7 +114,7 @@ public class DBManager {
         userDao.insertInTx(persons);
     }
 
-    public List<Person> getAllPerson(){
+    public List<Person> getAllPerson() {
         DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
         DaoSession daoSession = daoMaster.newSession();
         PersonDao personDao = daoSession.getPersonDao();
@@ -94,7 +123,7 @@ public class DBManager {
         return list;
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
         DaoSession daoSession = daoMaster.newSession();
         PersonDao personDao = daoSession.getPersonDao();
