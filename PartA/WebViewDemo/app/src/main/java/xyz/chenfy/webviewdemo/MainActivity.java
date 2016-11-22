@@ -3,8 +3,10 @@ package xyz.chenfy.webviewdemo;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -27,14 +29,16 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);//要想和js交互 必须开启Js
-//        webView.loadUrl("file:///android_asset/test.html");//加载本地页面
-        webView.loadUrl(url);
+        webView.loadUrl("file:///android_asset/test.html");//加载本地页面
+//        webView.loadUrl(url);
         webView.addJavascriptInterface(this, "demo");//demo是别名,和Js带代码里的是对应关系
+        webView.setWebChromeClient(new WebChromeClient() {});
     }
 
     //被js代码调用的方法,方法名需要和js代码一一对应
     @JavascriptInterface
-    void clickOnAndroid() {
+    public void clickOnAndroid() {
+        Log.d("MainActivity", "aaa");
         Toast.makeText(MainActivity.this, "被点击了", Toast.LENGTH_SHORT).show();
         webView.post(new Runnable() {
             @Override

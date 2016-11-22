@@ -1,5 +1,6 @@
 package com.lanou.chenfengyao.volleyuse.nettool;
 
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.android.volley.Response;
@@ -36,9 +37,37 @@ public class NetTool {
         ImageLoader imageLoader = VolleySingleton
                 .getInstance().getImageLoader();
 
+        imageView.setTag(url);
         imageLoader.get(url, ImageLoader.getImageListener(imageView,
                 R.mipmap.ic_launcher,//默认图片
                 R.mipmap.ic_launcher));//错误图片
+    }
+
+    class MyImgListener implements ImageLoader.ImageListener {
+        private String url;
+        private ImageView mImageView;
+
+        public MyImgListener(ImageView imageView, String url) {
+            mImageView = imageView;
+            this.url = url;
+        }
+
+        @Override
+        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+            Bitmap bitmap = response.getBitmap();
+            if (bitmap != null) {
+                if(url.equals(mImageView.getTag())){
+                    mImageView.setImageBitmap(bitmap);
+                }else {
+                    getImage(url,mImageView);
+                }
+            }
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+
+        }
     }
 
     /**
@@ -67,7 +96,7 @@ public class NetTool {
         });
 
         //将Request加入到RequestQueue里
-        VolleySingleton.getInstance().addRequest(gsonRequest,tag);
+        VolleySingleton.getInstance().addRequest(gsonRequest, tag);
     }
 
     //netTool销毁的方法,会取消和这个工具类绑定的所有Tag

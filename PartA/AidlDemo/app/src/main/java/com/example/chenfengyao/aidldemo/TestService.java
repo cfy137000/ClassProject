@@ -29,6 +29,11 @@ public class TestService extends Service {
         }
     };
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

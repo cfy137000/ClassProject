@@ -25,7 +25,7 @@ public class UDPAty extends AppCompatActivity {
     private Button sendBtn;
     private EditText mainEt;
     private String mHost = "192.168.43.162";
-    private int port = 8089;
+    private int port = 3000;
 
     private DatagramSocket mDatagramSocket;
     private InetSocketAddress mSocketAddress;

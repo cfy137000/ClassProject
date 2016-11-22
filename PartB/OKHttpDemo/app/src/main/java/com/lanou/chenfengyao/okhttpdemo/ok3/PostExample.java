@@ -2,7 +2,9 @@ package com.lanou.chenfengyao.okhttpdemo.ok3;
 
 import java.io.IOException;
 
+import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -23,6 +25,19 @@ public class PostExample {
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }
+    }
+    public void fun(){
+        OkHttpClient client = new OkHttpClient.Builder()
+                .build();
+        FormBody.Builder builder = new FormBody.Builder();
+        builder.add("username","DLA160810");
+        FormBody build = builder.build();
+        MultipartBody.Builder mBuilder = new MultipartBody.Builder();
+//        mBuilder.addFormDataPart()
+        Request request = new Request.Builder()
+                .url("url")
+                .post(build)
+                .build();
     }
 
     String bowlingJson(String player1, String player2) {

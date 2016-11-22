@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 public class HandlerActivity extends Activity {
 
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -24,6 +25,9 @@ public class HandlerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handler);
         mTv = (TextView) findViewById(R.id.mTv);
+        Message message = mHandler.obtainMessage();
+        mHandler.sendMessageDelayed(message,10000000);
+
         new Thread(new Runnable() {
             @Override
             public void run() {

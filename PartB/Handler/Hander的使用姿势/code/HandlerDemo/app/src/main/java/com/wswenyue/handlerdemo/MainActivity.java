@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends Activity {
-    private ThreadLocal<Boolean> mThreadLocal = new ThreadLocal<>();
-    public static final String TAG_THREADLOCAL = "ThreadLocal";
+    private ThreadLocal<Boolean> mThreadLocal =
+            new ThreadLocal<>();
+    public static final String TAG_THREADLOCAL
+            = "ThreadLocal";
     private static final String TAG = "MainActivity";
     public static Handler mUIHandler = new Handler() {
         @Override
