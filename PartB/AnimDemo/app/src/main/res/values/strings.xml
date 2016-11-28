@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AnimDemo</string>
+    <string name="jump">跳转</string>
+</resources>

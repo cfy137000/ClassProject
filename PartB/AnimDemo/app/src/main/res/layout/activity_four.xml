@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical" android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/second_btn1"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#cb83e92a"
+        android:transitionName="one"
+        android:textSize="30sp"/>
+    <TextView
+        android:id="@+id/second_btn3"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#cb893edf"
+        android:textSize="30sp"
+        android:transitionName="three"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/second_btn4"
+        android:layout_width="180dp"
+        android:layout_height="80dp"
+        android:background="#cb3e79df"
+        android:textSize="30sp"
+        android:transitionName="four"
+        android:layout_alignStart="@+id/second_btn3"
+        android:layout_below="@+id/second_btn1"
+        android:layout_above="@+id/second_btn3" />
+
+    <TextView
+        android:id="@+id/second_btn_2"
+        android:layout_width="180dp"
+        android:layout_height="80dp"
+        android:background="#cb3edfdf"
+        android:textSize="30sp"
+        android:transitionName="sharedView"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/second_btn1"
+        android:layout_above="@+id/second_btn3" />
+
+</RelativeLayout>
