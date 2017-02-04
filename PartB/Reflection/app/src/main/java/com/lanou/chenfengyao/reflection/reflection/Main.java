@@ -9,6 +9,13 @@ import java.lang.reflect.Method;
  */
 public class Main {
     public static void main(String args[]){
+        try {
+            Class<?> aClass = Class.forName("com.lanou.chenfengyao.reflection.reflection.Person");
+            Object o = aClass.newInstance();
+            System.out.println(o.getClass().getSimpleName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         Person person = new Person();
         System.out.println(person.getFlag());
         Class personClass = person.getClass();

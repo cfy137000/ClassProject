@@ -24,8 +24,11 @@ public class Main {
             String strReceive = new String(dpReceive.getData(), 0, dpReceive.getLength()) +
                     " from " + dpReceive.getAddress().getHostAddress() + ":" + dpReceive.getPort();
             System.out.println(strReceive);
-            //数据发动到客户端的3000端口
-            DatagramPacket dpSend = new DatagramPacket(strSend.getBytes(), strSend.length(), dpReceive.getAddress(), 9000);
+            //数据发动到客户端的9000端口
+            DatagramPacket dpSend = new DatagramPacket(strSend.getBytes(),
+                    strSend.length(),
+                    dpReceive.getAddress(),
+                    9000);
             ds.send(dpSend);
             //由于dp_receive在接收了数据之后，其内部消息长度值会变为实际接收的消息的字节数，
             //所以这里要将dp_receive的内部消息长度重新置为1024
